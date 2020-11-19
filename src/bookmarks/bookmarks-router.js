@@ -5,6 +5,7 @@ const logger = require('../logger')
 const store = require('../store')
 const BookmarksService = require('./bookmarks-service')
 
+
 const bookmarksRouter = express.Router()
 const bodyParser = express.json()
 
@@ -19,7 +20,7 @@ const serializeBookmark = bookmark => ({
 bookmarksRouter
   .route('/bookmarks')
   .get((req, res, next) => {
-    BookmarksService.getAllBookmarks(req.app.get('db'))
+    BookmarksService.getAllBookmarks( req.app.get('db') )
       .then(bookmarks => {
         res.json(bookmarks.map(serializeBookmark))
       })
