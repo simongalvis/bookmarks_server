@@ -22,6 +22,9 @@ app.use(bookmarksRouter)
 app.get('/', (req, res) => {
   res.send('Hello, world!')
 })
+app.post('/bookmarks', (req, res, next) =>{
+res.status(201).send('successful stuff')
+})
 
 app.use(errorHandler)
 
