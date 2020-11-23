@@ -103,6 +103,35 @@ describe('Bookmarks Endpoints', () => {
     })
 
     context('Given there are bookmarks in the database', () => {
+      describe(`GET /articles/:article_id`, () => {
+
+        context('Given there are articles in the database', () => {/* not shown */})
+    
+       context(`Given an XSS attack article`, () => {
+         const maliciousBookmark = {
+           id:911,
+           title: 'Naughty naughty very naughty <script>alert("xss");</script>',
+           url: "https://test.com",
+           description: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+           rating: '2',
+         }
+    
+         beforeEach('insert malicious article', () => {
+           return db
+             .into('bookmarks')
+             .insert([ maliciousBookmark ])
+         })
+    
+         it('removes XSS attack content', () => {
+           return supertest(app)
+             .get(`/bookmarks/${maliciousBookmark.id}`)
+             .expect(200)
+             .expect(res => {
+               expect(res.body.title).to.eql('Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;')
+               expect(res.body.description).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
+             })
+         })
+       })
       const testBookmarks = fixtures.makeBookmarksArray()
 
       beforeEach('insert bookmarks', () => {
@@ -163,6 +192,7 @@ describe('Bookmarks Endpoints', () => {
       const newBookmarkMissingUrl = {
         title: 'test-title',
         // url: 'https://test.com',
+        description:"Test description",
         rating: 1,
       }
       return supertest(app)
@@ -185,10 +215,11 @@ describe('Bookmarks Endpoints', () => {
         .expect(400, `'rating' is required`)
     })
 
-    it.only(`responds with 400 invalid 'rating' if not between 0 and 5`, () => {
+    it(`responds with 400 invalid 'rating' if not between 0 and 5`, () => {
       const newBookmarkInvalidRating = {
         title: 'test-title',
         url: 'https://test.com',
+        description: "Test decription",
         rating: 'invalid',
       }
       return supertest(app)
@@ -203,6 +234,7 @@ describe('Bookmarks Endpoints', () => {
         title: 'test-title',
         url: 'htp://invalid-url',
         rating: 1,
+        description: "Test description"
       }
       return supertest(app)
         .post(`/bookmarks`)
@@ -216,7 +248,7 @@ describe('Bookmarks Endpoints', () => {
         title: 'test-title',
         url: 'https://test.com',
         description: 'test description',
-        rating: 1,
+        rating: '5',
       }
       return supertest(app)
         .post(`/bookmarks`)
@@ -235,4 +267,5 @@ describe('Bookmarks Endpoints', () => {
         })
     })
   })
-})
+
+  })})
