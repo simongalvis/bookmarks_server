@@ -155,7 +155,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmarkMissingTitle)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'title' is required`)
     })
 
@@ -168,7 +168,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmarkMissingUrl)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'url' is required`)
     })
 
@@ -181,7 +181,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmarkMissingRating)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'rating' is required`)
     })
 
@@ -194,7 +194,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmarkInvalidRating)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'rating' must be a number between 0 and 5`)
     })
 
@@ -207,7 +207,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmarkInvalidUrl)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'url' must be a valid URL`)
     })
 
@@ -221,7 +221,7 @@ describe('Bookmarks Endpoints', () => {
       return supertest(app)
         .post(`/bookmarks`)
         .send(newBookmark)
-        //.set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(201)
         .expect(res => {
           expect(res.body.title).to.eql(newBookmark.title)
