@@ -26,36 +26,31 @@ bookmarksRouter
       })
       .catch(next)
   })
-  .post(bodyParser, (req, res) => {
-    // TODO: update to use db
-    for (const field of ['title', 'url', 'rating']) {
-      if (!req.body[field]) {
-        logger.error(`${field} is required`)
-        return res.status(400).send(`'${field}' is required`)
-      }
-    }
-    const { title, url, description, rating } = req.body
+  .post(bodyParser, (req, res, next) => {
+    console.log(req.query)
+    const { title, url, description, rating } = req.query
+    const newBookmark = { title, url, description, rating}
 
-    if (!Number.isInteger(rating) || rating < 0 || rating > 5) {
-      logger.error(`Invalid rating '${rating}' supplied`)
-      return res.status(400).send(`'rating' must be a number between 0 and 5`)
-    }
+    for (const [key, value] of Object.entries(newBookmark))
+      if (value == null)
+        return res.status(400).json({
+          error: { message: `Missing '${key}' in request body` }
+        })
 
-    if (!isWebUri(url)) {
-      logger.error(`Invalid url '${url}' supplied`)
-      return res.status(400).send(`'url' must be a valid URL`)
-    }
-
-    const bookmark = { id: uuid(), title, url, description, rating }
-
-    store.bookmarks.push(bookmark)
-
-    logger.info(`Bookmark with id ${bookmark.id} created`)
-    res
-      .status(201)
-      .location(`http://localhost:8000/bookmarks/${bookmark.id}`)
-      .json(bookmark)
+    BookmarksService.insertBookmark(
+      req.app.get('db'),
+      newArticle
+    )
+      .then(bookmark => {
+        res
+          .status(201)
+          .location(`/bookmarks/${bookmark.id}`)
+          .json(serializeArticle(bookmark))
+      })
+      .catch(next)
   })
+
+
 
 bookmarksRouter
   .route('/bookmarks/:bookmark_id')
