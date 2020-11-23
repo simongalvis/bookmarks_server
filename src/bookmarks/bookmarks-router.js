@@ -33,9 +33,7 @@ bookmarksRouter
 
     for (const [key, value] of Object.entries(newBookmark))
       if (value == null)
-        return res.status(400).json({
-          error: { message: `Missing '${key}' in request body` }
-        })
+        return res.status(400).send(`'${key}' is required`)
 
     BookmarksService.insertBookmark(
       req.app.get('db'),
