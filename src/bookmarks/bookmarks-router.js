@@ -29,9 +29,15 @@ bookmarksRouter
   .post(bodyParser, (req, res, next) => {
     console.log(req.body)
     const { title, url, description, rating } = req.body
-    const newBookmark = { title, url, description, rating}
+    const newBookmark = { title, url, rating, description}
+
+    console.log(newBookmark.rating)
+    if(newBookmark.rating < 0 || newBookmark.rating > 5 || isNaN(newBookmark.rating) == true){
+      return res.status(400).send(`'rating' must be a number between 0 and 5`)
+    }
 
     for (const [key, value] of Object.entries(newBookmark))
+      
       if (value == null)
         return res.status(400).send(`'${key}' is required`)
 

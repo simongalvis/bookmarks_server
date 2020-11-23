@@ -185,7 +185,7 @@ describe('Bookmarks Endpoints', () => {
         .expect(400, `'rating' is required`)
     })
 
-    it(`responds with 400 invalid 'rating' if not between 0 and 5`, () => {
+    it.only(`responds with 400 invalid 'rating' if not between 0 and 5`, () => {
       const newBookmarkInvalidRating = {
         title: 'test-title',
         url: 'https://test.com',
