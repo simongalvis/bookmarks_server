@@ -27,8 +27,8 @@ bookmarksRouter
       .catch(next)
   })
   .post(bodyParser, (req, res, next) => {
-    console.log(req.query)
-    const { title, url, description, rating } = req.query
+    console.log(req.body)
+    const { title, url, description, rating } = req.body
     const newBookmark = { title, url, description, rating}
 
     for (const [key, value] of Object.entries(newBookmark))
@@ -39,13 +39,13 @@ bookmarksRouter
 
     BookmarksService.insertBookmark(
       req.app.get('db'),
-      newArticle
+      newBookmark
     )
       .then(bookmark => {
         res
           .status(201)
           .location(`/bookmarks/${bookmark.id}`)
-          .json(serializeArticle(bookmark))
+          .json(serializeBookmark(bookmark))
       })
       .catch(next)
   })
