@@ -123,8 +123,10 @@ describe('Bookmarks Endpoints', () => {
              .into('bookmarks')
              .insert([ maliciousBookmark ])
          })
+
+         beforeEach('cleanup', () => db('bookmarks').truncate())
     
-         it.only('removes XSS attack content', () => {
+         it('removes XSS attack content on GET', () => {
            return supertest(app)
              .get(`/bookmarks/${maliciousBookmark.id}`)
              .expect(200)
@@ -133,6 +135,16 @@ describe('Bookmarks Endpoints', () => {
                expect(res.body.description).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
              })
          })
+         it.only('removes XSS attack content on POST', () => {
+          return supertest(app)
+            .post(`/bookmarks`)
+            .send(maliciousBookmark)
+            .expect(201)
+            .expect(res => {
+              expect(res.body.title).to.eql('Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;')
+              expect(res.body.description).to.eql(`Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`)
+            })
+        })
        })
       const testBookmarks = fixtures.makeBookmarksArray()
 
