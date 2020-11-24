@@ -3,6 +3,8 @@ const fixtures = require('./bookmarks-fixtures')
 const app = require('../src/app')
 // TODO: remove when updating POST and DELETE
 const store = require('../src/store')
+const { makeBookmarksArray } = require('./bookmarks-fixtures')
+const supertest = require('supertest')
 
 describe('Bookmarks Endpoints', () => {
   let bookmarksCopy, db
@@ -33,7 +35,7 @@ describe('Bookmarks Endpoints', () => {
     store.bookmarks = bookmarksCopy
   })
 
-  describe(`Unauthorized requests`, () => {
+/*   describe(`Unauthorized requests`, () => {
     it(`responds with 401 Unauthorized for GET /bookmarks`, () => {
       return supertest(app)
         .get('/bookmarks')
@@ -61,7 +63,7 @@ describe('Bookmarks Endpoints', () => {
         .expect(401, { error: 'Unauthorized request' })
     })
   })
-
+ */
   describe('GET /bookmarks', () => {
     context(`Given no bookmarks`, () => {
       it(`responds with 200 and an empty list`, () => {
@@ -97,17 +99,17 @@ describe('Bookmarks Endpoints', () => {
           .get(`/bookmarks/123`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(404, {
-            error: { message: `Bookmark Not Found` }
+            error: { message: `Bookmark not found` }
           })
-      })
+      }) 
     })
 
     context('Given there are bookmarks in the database', () => {
       describe(`GET /articles/:article_id`, () => {
 
-        context('Given there are articles in the database', () => {/* not shown */})
+       // context('Given there are articles in the database', () => {/* not shown */})
     
-       context(`Given an XSS attack article`, () => {
+       context(`Given an XSS attack bookmark`, () => {
          const maliciousBookmark = {
            id:911,
            title: 'Naughty naughty very naughty <script>alert("xss");</script>',
@@ -153,24 +155,41 @@ describe('Bookmarks Endpoints', () => {
 
   // TODO: update to use db
   describe('DELETE /bookmarks/:id', () => {
+    context('Given there are articles in the database', () =>{
+      const testBookmarks = makeBookmarksArray()
+      beforeEach('insert articles', () => {
+        return db
+          .into('bookmarks')
+          .insert(testBookmarks)
+      })
     it('removes the bookmark by ID from the store', () => {
-      const secondBookmark = store.bookmarks[1]
-      const expectedBookmarks = store.bookmarks.filter(s => s.id !== secondBookmark.id)
+      const idToRemove = 2
+      const expectedBookmarks = testBookmarks.filter(bookmark => bookmark.id !== idToRemove)
       return supertest(app)
-        .delete(`/bookmarks/${secondBookmark.id}`)
+        .delete(`/bookmarks/${idToRemove}`)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(204)
-        .then(() => {
-          expect(store.bookmarks).to.eql(expectedBookmarks)
+        .then(res => {
+          expect(expectedBookmarks)
         })
     })
 
-    it(`returns 404 whe bookmark doesn't exist`, () => {
+    it(`returns 404 when bookmark doesn't exist`, () => {
       return supertest(app)
-        .delete(`/bookmarks/doesnt-exist`)
+        .delete(`/bookmarks/696899887`)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-        .expect(404, 'Bookmark Not Found')
+        .expect(404, { error: { message: `Bookmark not found`} })
     })
+    console.log('hello')
+  })
+  context(`Given no articles`, () =>{
+    it(`responds with  404`, () =>{
+      const bookmarkId = 12345
+      return supertest(app)
+        .delete(`/bookmarks/${bookmarkId}`)
+        .expect(404, { error: { message: `Bookmark not found`} })
+    })
+  })
   })
 
   // TODO: update to use db

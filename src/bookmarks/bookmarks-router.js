@@ -84,7 +84,7 @@ bookmarksRouter
         if (!bookmark) {
           logger.error(`Bookmark with id ${bookmark_id} not found.`);
           return res.status(404).json({
-            error: { message: `Bookmark Not Found` },
+            error: { message: `Bookmark not found` },
           });
         }
         res.bookmark = bookmark;
@@ -102,9 +102,28 @@ bookmarksRouter
     })
   })
 
-  .delete((req, res) => {
+  .delete((req, res, next) => {
+    BookmarksService.deleteBookmark(
+      req.app.get('db'),
+      req.params.bookmark_id
+    )
+    .then((bookmark) => {
+      if (!bookmark) {
+        logger.error(`Bookmark with id ${bookmark_id} not found.`);
+        return res.status(404).json({
+          error: { message: `Bookmark Not Found` },
+        });
+      }
+      res.bookmark = bookmark;
+      next();
+    })
+     
+    .then(() => {
+      res.status(204).end()
+    })
+    .catch(next)
     // TODO: update to use db
-    const { bookmark_id } = req.params;
+/*     const { bookmark_id } = req.params;
 
     const bookmarkIndex = store.bookmarks.findIndex(
       (b) => b.id === bookmark_id
@@ -115,10 +134,12 @@ bookmarksRouter
       return res.status(404).send("Bookmark Not Found");
     }
 
+    
     store.bookmarks.splice(bookmarkIndex, 1);
 
     logger.info(`Bookmark with id ${bookmark_id} deleted.`);
-    res.status(204).end();
+    res.status(204).end(); */
   });
 
 module.exports = bookmarksRouter;
+ 
