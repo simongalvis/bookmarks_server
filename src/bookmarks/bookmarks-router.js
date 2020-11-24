@@ -67,7 +67,14 @@ bookmarksRouter
         res
           .status(201)
           .location(`/bookmarks/${bookmark.id}`)
-          .json(serializeBookmark(bookmark));
+          .json({
+            id:bookmark.id,
+            title:xss(bookmark.title),
+            url:bookmark.url,
+            description:xss(bookmark.description), 
+            rating:parseInt(bookmark.rating)
+          }
+          );
       })
 
       .catch(next);

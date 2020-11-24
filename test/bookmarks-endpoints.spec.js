@@ -105,9 +105,9 @@ describe('Bookmarks Endpoints', () => {
     })
 
     context('Given there are bookmarks in the database', () => {
-      describe(`GET /articles/:article_id`, () => {
+      describe(`GET /bookmark/:bookmark_id`, () => {
 
-       // context('Given there are articles in the database', () => {/* not shown */})
+       
     
        context(`Given an XSS attack bookmark`, () => {
          const maliciousBookmark = {
@@ -118,13 +118,13 @@ describe('Bookmarks Endpoints', () => {
            rating: '2',
          }
     
-         beforeEach('insert malicious article', () => {
+         beforeEach('insert malicious bookmark', () => {
            return db
              .into('bookmarks')
              .insert([ maliciousBookmark ])
          })
     
-         it('removes XSS attack content', () => {
+         it.only('removes XSS attack content', () => {
            return supertest(app)
              .get(`/bookmarks/${maliciousBookmark.id}`)
              .expect(200)
@@ -155,9 +155,9 @@ describe('Bookmarks Endpoints', () => {
 
   // TODO: update to use db
   describe('DELETE /bookmarks/:id', () => {
-    context('Given there are articles in the database', () =>{
+    context('Given there are bookmarks in the database', () =>{
       const testBookmarks = makeBookmarksArray()
-      beforeEach('insert articles', () => {
+      beforeEach('insert bookmarks', () => {
         return db
           .into('bookmarks')
           .insert(testBookmarks)
@@ -182,7 +182,7 @@ describe('Bookmarks Endpoints', () => {
     })
     console.log('hello')
   })
-  context(`Given no articles`, () =>{
+  context(`Given no bookmarks`, () =>{
     it(`responds with  404`, () =>{
       const bookmarkId = 12345
       return supertest(app)
