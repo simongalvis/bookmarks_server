@@ -301,7 +301,7 @@ describe("Bookmarks Endpoints", () => {
       })
     })
 
-    describe(`PATCH /api/bookmarks/:id`, () =>{
+    describe.only(`PATCH /api/bookmarks/:id`, () =>{
       context(`Given no bookmarks`, () =>{
         it(`responds with 404`, () =>{
         const nonExistentbookmarkId = 1234567
@@ -323,17 +323,34 @@ describe("Bookmarks Endpoints", () => {
             .into('bookmarks')
             .insert(testBookmarks)
         })
-           it.only(`responds with a 204 and no content when successful`, () =>{
-            const existingBookmarkId = testBookmarks[0].id
+           it(`responds with a 204 and no content when successful`, () =>{
+            const idToUpdate = testBookmarks[0].id
             const updateBookmark = {
               title:'Updated title'
             }
              return supertest(app)
-              .patch(`/api/bookmarks/${existingBookmarkId}`)
+              .patch(`/api/bookmarks/${idToUpdate}`)
               .send(updateBookmark)
               .expect(204)
-              
-
+           })
+           it(`updates bookmark in database`, () =>{
+            const idToUpdate = testBookmarks[0].id
+            const updateBookmark = {
+              title:'Updated title'
+            }
+            const expectedBookmark = {
+              ...testBookmarks[0],
+              ...updateBookmark,
+            }
+            return supertest(app)
+              .patch(`/api/bookmarks/${idToUpdate}`)
+              .send(updateBookmark)
+              .expect(204)
+              .then(res =>{
+                return supertest(app)
+                .get(`/api/bookmarks/${idToUpdate}`)
+                .expect(expectedBookmark)
+              })
            })
       })
     })
