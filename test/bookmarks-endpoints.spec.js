@@ -304,15 +304,40 @@ describe("Bookmarks Endpoints", () => {
     describe(`PATCH /api/bookmarks/:id`, () =>{
       context(`Given no bookmarks`, () =>{
         it(`responds with 404`, () =>{
-        const bookmarkId = 1234567
+        const nonExistentbookmarkId = 1234567
+        
         return supertest(app)
-          .patch(`/api/bookmarks/${bookmarkId}`)
+          .patch(`/api/bookmarks/${nonExistentbookmarkId}`)
           .expect(404, { error: { message: `Bookmark not found` } })
         })
+      })
+      context(`Given there are bookmarks in the database`, () => {
+        /* it.only(`requires the bookmark's ID to be supplied as a URL param`, () =>{
+          return supertest(app)
+            .patch(`/api/bookmarks`)
+            .expect(404 , { error: { message: `Bookmark's ID must be supplied as URL parameter`}} )
+        }) */
+        testBookmarks = makeBookmarksArray()
+        beforeEach('insert articles', () => {
+          return db
+            .into('bookmarks')
+            .insert(testBookmarks)
+        })
+           it.only(`responds with a 204 and no content when successful`, () =>{
+            const existingBookmarkId = testBookmarks[0].id
+            const updateBookmark = {
+              title:'Updated title'
+            }
+             return supertest(app)
+              .patch(`/api/bookmarks/${existingBookmarkId}`)
+              .send(updateBookmark)
+              .expect(204)
+              
+
+           })
       })
     })
 
     
   })
 })
- 
