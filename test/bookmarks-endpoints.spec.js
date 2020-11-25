@@ -300,7 +300,7 @@ describe("Bookmarks Endpoints", () => {
       });
     });
 
-    describe.only(`PATCH /api/bookmarks/:id`, () => {
+    describe(`PATCH /api/bookmarks/:id`, () => {
       context(`Given no bookmarks`, () => {
         it(`responds with 404`, () => {
           const nonExistentbookmarkId = 1234567;
@@ -311,15 +311,16 @@ describe("Bookmarks Endpoints", () => {
         });
       });
       context(`Given there are bookmarks in the database`, () => {
-        /* it.only(`requires the bookmark's ID to be supplied as a URL param`, () =>{
-          return supertest(app)
-            .patch(`/api/bookmarks`)
-            .expect(404 , { error: { message: `Bookmark's ID must be supplied as URL parameter`}} )
-        }) */
+     
         testBookmarks = makeBookmarksArray();
         beforeEach("insert articles", () => {
           return db.into("bookmarks").insert(testBookmarks);
         });
+        it(`requires the bookmark's ID to be supplied as a URL param`, () =>{
+          return supertest(app)
+            .patch(`/api/bookmarks`)
+            .expect(404)
+        })
         it(`responds with a 204 and no content when successful`, () => {
           const idToUpdate = testBookmarks[0].id;
           const updateBookmark = {

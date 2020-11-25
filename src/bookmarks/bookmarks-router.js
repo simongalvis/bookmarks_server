@@ -41,11 +41,11 @@ bookmarksRouter
       .catch(next);
   })
   .post(bodyParser, (req, res, next) => {
-    console.log(req.body);
+    
     const { title, url, description, rating } = req.body;
     const newBookmark = { title, url, rating, description };
 
-    console.log("rating: " + newBookmark.rating);
+    
 
     for (const [key, value] of Object.entries(newBookmark))
       if (value == null) {
@@ -79,7 +79,7 @@ bookmarksRouter
 
       .catch(next);
 
-    //console.log("resbodyrating: " + req.body.rating);
+    
   });
 
 bookmarksRouter
@@ -87,7 +87,7 @@ bookmarksRouter
   .all((req, res, next) => {
    
     const { bookmark_id } = req.params;
-    console.log('bmid: ' + bookmark_id)
+    
     BookmarksService.getById(req.app.get("db"), bookmark_id)
       .then((bookmark) => {
 
@@ -154,7 +154,7 @@ bookmarksRouter
     //const { bookmark_id } = req.params.bookmark_id
     const { title, url, description, rating } = req.body
     const bookmarkToUpdate = { title, url, description, rating }
-//console.log(bookmark_id)
+
     const numberOfValues = Object.values(bookmarkToUpdate).filter(Boolean).length
    if (numberOfValues === 0) {
 
