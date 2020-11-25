@@ -352,6 +352,14 @@ describe("Bookmarks Endpoints", () => {
                 .expect(expectedBookmark)
               })
            })
+           it(`responds with a 400 when no values are supplied for any fields`, () =>{
+            const idToUpdate = testBookmarks[0].id
+             return supertest(app)
+              .patch(`/api/bookmarks/${idToUpdate}`)
+              .send()
+              .expect(400, { error: {message: `Request body must contain either 'title', 'url', 'description', or 'rating'` } } )
+              
+           })
       })
     })
 
