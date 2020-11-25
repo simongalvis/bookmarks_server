@@ -32,7 +32,7 @@ function validURL(str) {
 }
 
 bookmarksRouter
-  .route("/bookmarks")
+  .route("/")
   .get((req, res, next) => {
     BookmarksService.getAllBookmarks(req.app.get("db"))
       .then((bookmarks) => {
@@ -66,7 +66,7 @@ bookmarksRouter
       .then((bookmark) => {
         res
           .status(201)
-          .location(`/bookmarks/${bookmark.id}`)
+          .location(req.originalUrl + `${bookmark.id}`)
           .json({
             id:bookmark.id,
             title:xss(bookmark.title),
@@ -83,7 +83,7 @@ bookmarksRouter
   });
 
 bookmarksRouter
-  .route("/bookmarks/:bookmark_id")
+  .route("/:bookmark_id")
   .all((req, res, next) => {
     const { bookmark_id } = req.params;
     BookmarksService.getById(req.app.get("db"), bookmark_id)
