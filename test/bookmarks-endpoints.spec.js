@@ -273,30 +273,30 @@ describe("Bookmarks Endpoints", () => {
           .expect(400, `'url' must be a valid URL`);
       });
 
-      it("adds a new bookmark to the store", () => {
+      it("adds a new bookmark to the database", () => {
         const newBookmark = {
           title: "test-title",
           url: "https://test.com",
           description: "test description",
-          rating: "5",
+          rating: 5,
         };
         return supertest(app)
           .post(`/api/bookmarks`)
           .send(newBookmark)
-          .set("Authorization", `Bearer ${process.env.API_TOKEN}`)
-          .expect(201)
+          //.set("Authorization", `Bearer ${process.env.API_TOKEN}`)
+           .expect(201)
           .expect((res) => {
             expect(res.body.title).to.eql(newBookmark.title);
             expect(res.body.url).to.eql(newBookmark.url);
             expect(res.body.description).to.eql(newBookmark.description);
             expect(res.body.rating).to.eql(newBookmark.rating);
-            expect(res.body.id).to.be.a("string");
-          })
+            expect(res.body.id).to.be.a("number");
+          }) 
           .then((res) => {
-            expect(store.bookmarks[store.bookmarks.length - 1]).to.eql(
-              res.body
-            );
-          });
+            return supertest(app)
+              .get(`/api/bookmarks/${res.body.id}`)
+            .expect(res.body)
+          }); 
       });
     });
 
@@ -340,6 +340,7 @@ describe("Bookmarks Endpoints", () => {
             ...testBookmarks[0],
             ...updateBookmark,
           };
+          //integration
           return supertest(app)
             .patch(`/api/bookmarks/${idToUpdate}`)
             .send(updateBookmark)
